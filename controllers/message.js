@@ -3,13 +3,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
-client.messages
-  .create({
-     body: 'This is the ship that made the Kessel Run in fourteen parsecs?',
-     from: '+15017122661',
-     to: '+15558675310'
-   })
-  .then(message => console.log(message.sid));
+
 exports.generateMessage = (req,res,next)=>{
   var otp =  Math.floor(100000 + Math.random() * 900000);
   // otp = otp.toString;
@@ -21,12 +15,32 @@ exports.generateMessage = (req,res,next)=>{
 }
 
 exports.createMessage = (req,res,next)=>{
-  const message = new Message({
-    content: req.body.content,
-    sent_to: req.body.sent_to,
-    status: "PENDING",
-    sent_by: req.userData
-  });
+  client.messages
+  .create({
+     body: req.body.content,
+     from: '(207) 802-0104',
+     to: req.body.sent_to
+   })
+  .then(response =>{
+    const message = new Message({
+      content: response.body,
+      sent_to: response.to,
+      status: respons.status,
+      sent_by: req.userData
+    });
+
+    message.save.then(savedMessage=>{
+
+    }).catch(error=> {
+      console.log(error);
+      res.status(500).json({
+        message: 'Couldnt sent message Try again!',
+        requested_body: req.body
+      })
+    })
+
+
+  })
 
 }
 
